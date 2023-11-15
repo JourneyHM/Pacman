@@ -108,22 +108,23 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    node = Node(problem.getStartState())
-    frontier = util.Stack()
-    frontier.push(node)
-    reached = {problem.getStartState(): node}
-    actions = []
+    startPos = problem.getStartState()
+    if problem.isGoalState(startPos):   # In case of starting in a goal state, you don't need to move.
+        return []
 
-    while not frontier.isEmpty():
-        node = frontier.pop()
-        if problem.isGoalState(node.state):
-            actions = path_actions(node)
-        for child in expand(problem, node):
-            s = child.state
-            if s not in reached:
-                reached[s] = child
-                frontier.push(child)
-    return actions
+    stack = util.Stack()
+    stack.push((startPos,[]))   # In stack -> tuples of: (node, actions)
+    visited = []
+
+    while not stack.isEmpty():
+        actualPos, actions = stack.pop()
+        if actualPos not in visited:
+            visited.append(actualPos)
+            if problem.isGoalState(actualPos):
+                return actions
+            for nextPos, action, cost in problem.getSuccessors(actualPos):
+                nextAction = actions + [action]
+                stack.push((nextPos, nextAction))
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
